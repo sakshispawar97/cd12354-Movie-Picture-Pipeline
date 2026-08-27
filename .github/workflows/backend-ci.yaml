@@ -20,30 +20,23 @@ jobs:
         working-directory: starter/backend
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Python
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
       - name: Install Pipenv
-        run: pip install pipenv
+        run: python -m pip install pipenv
 
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.local/share/virtualenvs
-          key: backend-pipenv-${{ runner.os }}-${{ hashFiles('starter/backend/Pipfile.lock') }}
-          restore-keys: |
-            backend-pipenv-${{ runner.os }}-
-
-      - name: Install dependencies
+      - name: Install project dependencies
         run: pipenv install --dev
 
-      - name: Run lint
+      - name: Run backend lint
         run: pipenv run lint
+
 
   test:
     name: Backend Tests
@@ -54,46 +47,38 @@ jobs:
         working-directory: starter/backend
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Python
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
       - name: Install Pipenv
-        run: pip install pipenv
+        run: python -m pip install pipenv
 
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.local/share/virtualenvs
-          key: backend-pipenv-${{ runner.os }}-${{ hashFiles('starter/backend/Pipfile.lock') }}
-          restore-keys: |
-            backend-pipenv-${{ runner.os }}-
-
-      - name: Install dependencies
+      - name: Install project dependencies
         run: pipenv install --dev
 
-      - name: Run tests
+      - name: Run backend tests
         run: pipenv run test
 
+
   build:
-    name: Backend Build
+    name: Backend Docker Build
     needs:
       - lint
       - test
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Build Docker image
+      - name: Build backend Docker image
         working-directory: starter/backend
         run: |
           docker build \
-            --tag mp-backend:${{ github.sha }} \
+            --tag movie-backend:${{ github.sha }} \
             .
-            
