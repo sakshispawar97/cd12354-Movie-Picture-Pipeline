@@ -6,7 +6,12 @@ WORKDIR /
 
 RUN useradd -u 1000 -m app
 
-RUN pip install pipenv
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    gcc \
+    libpcre2-dev \
+    && pip install pipenv \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /var/www/app /app
 
